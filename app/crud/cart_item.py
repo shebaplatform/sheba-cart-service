@@ -1,8 +1,11 @@
-from sqlalchemy.orm import Session
+from uuid import uuid4
+
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
+
 from app.models.cart_item import CartItem
 from app.schemas.cart_item import CartItemCreate
-from uuid import uuid4
+
 
 def create_cart_item(db: Session, cart_id, item_in: CartItemCreate):
     db_item = CartItem(**item_in.model_dump(), cart_id=cart_id)

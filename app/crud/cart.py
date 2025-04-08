@@ -1,10 +1,12 @@
-from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
+from uuid import uuid4
+
 from fastapi import HTTPException
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
+
+from app.crud import cart_item as crud_cart_item
 from app.models.cart import Cart
 from app.schemas.cart import CartCreate
-from uuid import uuid4
-from app.crud import cart_item as crud_cart_item
 
 
 def create_cart(db: Session, cart_in: CartCreate) -> Cart:

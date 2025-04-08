@@ -1,10 +1,13 @@
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from uuid import UUID
+
+from app.api.deps import get_db
+from app.crud import cart as crud_cart
+from app.crud import cart_item as crud_item
 from app.schemas.cart import CartCreate, CartOut
 from app.schemas.cart_item import CartItemCreate
-from app.crud import cart as crud_cart, cart_item as crud_item
-from app.api.deps import get_db
 
 router = APIRouter()
 

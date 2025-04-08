@@ -1,10 +1,14 @@
-from sqlalchemy import Column, String, Integer, DateTime, Numeric, Enum, UniqueConstraint
-from sqlalchemy.dialects.postgresql import UUID, ARRAY
-from sqlalchemy.orm import relationship
-from datetime import datetime, timezone
-import uuid
 import enum
+import uuid
+from datetime import datetime, timezone
+
+from sqlalchemy import (Column, DateTime, Enum, Integer, Numeric, String,
+                        UniqueConstraint)
+from sqlalchemy.dialects.postgresql import ARRAY, UUID
+from sqlalchemy.orm import relationship
+
 from app.db.base import Base
+
 
 class PaymentMethodEnum(str, enum.Enum):
     COD = "cod"

@@ -1,11 +1,15 @@
-from pydantic import BaseModel
-from typing import Optional, List
-from uuid import UUID
-from decimal import Decimal
-from datetime import datetime
-from .cart_item import CartItemOut
 import enum
+from datetime import datetime
+from decimal import Decimal
+from typing import List, Optional
+from uuid import UUID
+
+from pydantic import BaseModel
+
 from app.schemas.cart_item import CartItemCreate
+
+from .cart_item import CartItemOut
+
 
 class PaymentMethodEnum(str, enum.Enum):
     cod = "cod"
