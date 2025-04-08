@@ -15,7 +15,6 @@ class CartItemCreate(BaseModel):
     partner_id: int
     quantity: int
     price: Decimal
-    total_price: Decimal
     schedule_date: date
     schedule_time: time
     sales_channel: Optional[str]

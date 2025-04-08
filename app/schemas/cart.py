@@ -5,6 +5,7 @@ from decimal import Decimal
 from datetime import datetime
 from .cart_item import CartItemOut
 import enum
+from app.schemas.cart_item import CartItemCreate
 
 class PaymentMethodEnum(str, enum.Enum):
     cod = "cod"
@@ -21,14 +22,13 @@ class CartStatusEnum(str, enum.Enum):
 
 class CartCreate(BaseModel):
     customer_id: Optional[int]
-    session_id: Optional[str]
     name: Optional[str]
     address: Optional[str]
     address_id: Optional[int]
     mobile: Optional[str]
     payment_method: Optional[PaymentMethodEnum]
     status: Optional[CartStatusEnum] = CartStatusEnum.pending
-    total: Optional[Decimal]
+    cart_items: List[CartItemCreate]
 
 class CartOut(CartCreate):
     id: UUID

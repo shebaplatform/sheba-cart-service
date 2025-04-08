@@ -1,8 +1,8 @@
 """initial tables
 
-Revision ID: 966212891d7f
+Revision ID: deec6bd5834c
 Revises: 
-Create Date: 2025-04-07 16:18:25.538967
+Create Date: 2025-04-08 16:46:25.308326
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = '966212891d7f'
+revision: str = 'deec6bd5834c'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -24,7 +24,6 @@ def upgrade() -> None:
     op.create_table('carts',
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('customer_id', sa.Integer(), nullable=True),
-    sa.Column('session_id', sa.String(), nullable=True),
     sa.Column('name', sa.String(), nullable=True),
     sa.Column('address', sa.String(), nullable=True),
     sa.Column('address_id', sa.Integer(), nullable=True),
@@ -34,11 +33,12 @@ def upgrade() -> None:
     sa.Column('total', sa.Numeric(precision=10, scale=2), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('customer_id', 'status', name='uq_customer_status')
     )
     op.create_table('cart_items',
     sa.Column('id', sa.UUID(), nullable=False),
-    sa.Column('cart_id', sa.UUID(), nullable=True),
+    sa.Column('cart_id', sa.UUID(), nullable=False),
     sa.Column('service_id', sa.Integer(), nullable=True),
     sa.Column('category_id', sa.Integer(), nullable=True),
     sa.Column('partner_id', sa.Integer(), nullable=True),
@@ -52,8 +52,9 @@ def upgrade() -> None:
     sa.Column('status', sa.Enum('PENDING', 'CONFIRMED', name='cartitemstatusenum'), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
-    sa.ForeignKeyConstraint(['cart_id'], ['carts.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.ForeignKeyConstraint(['cart_id'], ['carts.id'], ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('cart_id', 'service_id', 'category_id', 'partner_id', 'schedule_date', 'schedule_time', 'options', name='uq_cart_item_composite_key')
     )
     # ### end Alembic commands ###
 
