@@ -1,11 +1,11 @@
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.models.cart_item import CartItem
-from app.schemas.cart_item import CartItemCreate
+from app.schemas.cart_item import CartItemCreate, CartItemStatusEnum, CartItemUpdate
 
 
 def create_cart_item(db: Session, cart_id, item_in: CartItemCreate):
@@ -47,7 +47,7 @@ def upsert_cart_item(db: Session, cart_id, item_in: CartItemCreate) -> float:
         schedule_time=item_in.schedule_time,
         sales_channel=item_in.sales_channel,
         options=options,
-        status=item_in.status,
+        # status=item_in.status,
     )
 
     db.add(item)
@@ -81,3 +81,33 @@ def upsert_cart_item(db: Session, cart_id, item_in: CartItemCreate) -> float:
             raise
 
     return total_price
+
+
+def update_cart_item(
+    db: Session, cart_id: UUID, cart_item_id: UUID, item_in: CartItemUpdate
+):
+    cart_item = db.query(CartItem).filter(CartItem.id == cart_item_id).first()
+    if not cart_item:
+        raise HTTPException(status_code=404, detail="Cart Item not found")
+
+    # Ensure the cart ID matches the one in the cart item
+    if cart_item.cart_id != cart_id:
+        raise HTTPException(
+            status_code=400, detail="Cart ID does not match the cart item"
+        )
+
+    # Check if status is 'pending' before allowing update
+    if cart_item.status != CartItemStatusEnum.pending:
+        raise HTTPException(
+            status_code=400, detail="Only pending cart items can be updated"
+        )
+
+    for field, value in item_in.model_dump(exclude_unset=True).items():
+        setattr(cart_item, field, value)
+
+    # Recalculate total price (optional, if needed based on price and quantity)
+    cart_item.total_price = cart_item.quantity * cart_item.price
+
+    db.commit()
+    db.refresh(cart_item)
+    return cart_item

@@ -33,15 +33,14 @@ class CartCreate(BaseModel):
     address_id: Optional[int]
     mobile: Optional[str]
     payment_method: Optional[PaymentMethodEnum]
-    status: Optional[CartStatusEnum] = CartStatusEnum.pending
     cart_items: List[CartItemCreate]
 
-    @field_validator("status")
-    @classmethod
-    def status_must_be_pending(cls, v):
-        if v != "pending":
-            raise ValueError("Only carts with status 'pending' can be created.")
-        return v
+    # @field_validator("status")
+    # @classmethod
+    # def status_must_be_pending(cls, v):
+    #     if v != "pending":
+    #         raise ValueError("Only carts with status 'pending' can be created.")
+    #     return v
 
 
 class CartOut(CartCreate):
@@ -49,6 +48,7 @@ class CartOut(CartCreate):
     created_at: datetime
     updated_at: datetime
     cart_items: List[CartItemOut]
+    status: Optional[CartStatusEnum] = CartStatusEnum.pending
 
     class Config:
         orm_mode = True
@@ -60,4 +60,4 @@ class CartUpdate(BaseModel):
     address_id: Optional[int]
     mobile: Optional[str]
     payment_method: Optional[PaymentMethodEnum]
-    status: Optional[CartStatusEnum]
+    # status: Optional[CartStatusEnum]
