@@ -1,2 +1,10 @@
 [tool.isort]
 skip_glob = ["alembic/versions/*"]
+
+[tool.black]
+exclude = '''
+/(
+  alembic/versions
+  | venv
+)/
+'''

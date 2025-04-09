@@ -20,9 +20,11 @@ class PaymentMethodEnum(str, enum.Enum):
     partner_wallet = "partner_wallet"
     bondhu_balance = "bondhu_balance"
 
+
 class CartStatusEnum(str, enum.Enum):
     pending = "pending"
     confirmed = "confirmed"
+
 
 class CartCreate(BaseModel):
     customer_id: Optional[int]
@@ -33,6 +35,7 @@ class CartCreate(BaseModel):
     payment_method: Optional[PaymentMethodEnum]
     status: Optional[CartStatusEnum] = CartStatusEnum.pending
     cart_items: List[CartItemCreate]
+
 
 class CartOut(CartCreate):
     id: UUID

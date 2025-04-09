@@ -28,14 +28,12 @@ def create_cart(db: Session, cart_in: CartCreate) -> Cart:
         db.flush()
     except IntegrityError as e:
         db.rollback()
-        if 'uq_customer_status' in str(e.orig):
+        if "uq_customer_status" in str(e.orig):
             raise HTTPException(
-                status_code=409,
-                detail="Cart already exists for this customer."
+                status_code=409, detail="Cart already exists for this customer."
             )
         raise HTTPException(
-            status_code=500,
-            detail="An unexpected database error occurred."
+            status_code=500, detail="An unexpected database error occurred."
         )
 
     # Create related cart items
@@ -53,6 +51,7 @@ def create_cart(db: Session, cart_in: CartCreate) -> Cart:
 
 def get_cart(db: Session, cart_id):
     return db.query(Cart).filter(Cart.id == cart_id).first()
+
 
 def delete_cart(db: Session, cart_id):
     cart = get_cart(db, cart_id)

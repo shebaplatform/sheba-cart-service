@@ -11,6 +11,7 @@ class CartItemStatusEnum(str, enum.Enum):
     pending = "pending"
     confirmed = "confirmed"
 
+
 class CartItemCreate(BaseModel):
     service_id: int
     category_id: int
@@ -22,6 +23,7 @@ class CartItemCreate(BaseModel):
     sales_channel: Optional[str]
     options: Optional[List[str]]
     status: Optional[CartItemStatusEnum] = CartItemStatusEnum.pending
+
 
 class CartItemOut(CartItemCreate):
     id: UUID

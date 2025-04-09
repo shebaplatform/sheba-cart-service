@@ -2,8 +2,15 @@ import enum
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import (Column, DateTime, Enum, Integer, Numeric, String,
-                        UniqueConstraint)
+from sqlalchemy import (
+    Column,
+    DateTime,
+    Enum,
+    Integer,
+    Numeric,
+    String,
+    UniqueConstraint,
+)
 from sqlalchemy.dialects.postgresql import ARRAY, UUID
 from sqlalchemy.orm import relationship
 
@@ -19,9 +26,11 @@ class PaymentMethodEnum(str, enum.Enum):
     PARTNER_WALLET = "partner_wallet"
     BONDHU_BALANCE = "bondhu_balance"
 
+
 class CartStatusEnum(str, enum.Enum):
     PENDING = "pending"
     CONFIRMED = "confirmed"
+
 
 class Cart(Base):
     __tablename__ = "carts"
@@ -37,9 +46,15 @@ class Cart(Base):
     total = Column(Numeric(10, 2), default=0)
 
     created_at = Column(DateTime, default=datetime.now(timezone.utc))
-    updated_at = Column(DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
+    updated_at = Column(
+        DateTime,
+        default=datetime.now(timezone.utc),
+        onupdate=datetime.now(timezone.utc),
+    )
 
-    cart_items = relationship("CartItem", back_populates="cart", cascade="all, delete-orphan")
+    cart_items = relationship(
+        "CartItem", back_populates="cart", cascade="all, delete-orphan"
+    )
 
     __table_args__ = (
         UniqueConstraint("customer_id", "status", name="uq_customer_status"),

@@ -2,8 +2,18 @@ import enum
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import (Column, Date, DateTime, Enum, ForeignKey, Integer,
-                        Numeric, String, Time, UniqueConstraint)
+from sqlalchemy import (
+    Column,
+    Date,
+    DateTime,
+    Enum,
+    ForeignKey,
+    Integer,
+    Numeric,
+    String,
+    Time,
+    UniqueConstraint,
+)
 from sqlalchemy.dialects.postgresql import ARRAY, UUID
 from sqlalchemy.orm import relationship
 
@@ -20,9 +30,7 @@ class CartItem(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     cart_id = Column(
-        UUID(as_uuid=True),
-        ForeignKey("carts.id", ondelete="CASCADE"),
-        nullable=False
+        UUID(as_uuid=True), ForeignKey("carts.id", ondelete="CASCADE"), nullable=False
     )
     service_id = Column(Integer)
     category_id = Column(Integer)

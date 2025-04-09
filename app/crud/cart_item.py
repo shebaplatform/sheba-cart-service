@@ -14,6 +14,7 @@ def create_cart_item(db: Session, cart_id, item_in: CartItemCreate):
     db.refresh(db_item)
     return db_item
 
+
 def upsert_cart_item(db: Session, cart_id, item_in: CartItemCreate) -> float:
     """Insert or update a CartItem, return total_price added to cart total."""
 
@@ -37,22 +38,26 @@ def upsert_cart_item(db: Session, cart_id, item_in: CartItemCreate) -> float:
     )
 
     db.add(item)
-   
+
     print("🚀 Inserting new cart item")
     try:
         db.flush()
     except IntegrityError as e:
         print("⚠️ IntegrityError caught:", e)
         db.rollback()
-        existing_item = db.query(CartItem).filter_by(
-            cart_id=cart_id,
-            service_id=item_in.service_id,
-            category_id=item_in.category_id,
-            partner_id=item_in.partner_id,
-            schedule_date=item_in.schedule_date,
-            schedule_time=item_in.schedule_time,
-            options=options
-        ).first()
+        existing_item = (
+            db.query(CartItem)
+            .filter_by(
+                cart_id=cart_id,
+                service_id=item_in.service_id,
+                category_id=item_in.category_id,
+                partner_id=item_in.partner_id,
+                schedule_date=item_in.schedule_date,
+                schedule_time=item_in.schedule_time,
+                options=options,
+            )
+            .first()
+        )
 
         if existing_item:
             existing_item.quantity += item_in.quantity
