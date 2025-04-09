@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.crud import cart_item as crud_cart_item
 from app.models.cart import Cart
-from app.schemas.cart import CartCreate
+from app.schemas.cart import CartCreate, CartUpdate
 
 
 def create_cart(db: Session, cart_in: CartCreate) -> Cart:
@@ -58,4 +58,18 @@ def delete_cart(db: Session, cart_id):
     if cart:
         db.delete(cart)
         db.commit()
+    return cart
+
+
+def update_cart(db: Session, cart_id, cart_in: CartUpdate):
+    cart = db.query(Cart).filter(Cart.id == cart_id).first()
+    if not cart:
+        raise HTTPException(status_code=404, detail="Cart not found")
+
+    for field, value in cart_in.model_dump(exclude_unset=True).items():
+        if field != "cart_items":
+            setattr(cart, field, value)
+
+    db.commit()
+    db.refresh(cart)
     return cart

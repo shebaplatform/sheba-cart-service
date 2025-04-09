@@ -48,7 +48,16 @@ class CartOut(CartCreate):
     id: UUID
     created_at: datetime
     updated_at: datetime
-    items: List[CartItemOut] = []
+    cart_items: List[CartItemOut]
 
     class Config:
         orm_mode = True
+
+
+class CartUpdate(BaseModel):
+    name: Optional[str]
+    address: Optional[str]
+    address_id: Optional[int]
+    mobile: Optional[str]
+    payment_method: Optional[PaymentMethodEnum]
+    status: Optional[CartStatusEnum]
