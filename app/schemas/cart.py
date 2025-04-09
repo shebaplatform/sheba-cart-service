@@ -4,7 +4,7 @@ from decimal import Decimal
 from typing import List, Optional
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 from app.schemas.cart_item import CartItemCreate
 
@@ -35,6 +35,13 @@ class CartCreate(BaseModel):
     payment_method: Optional[PaymentMethodEnum]
     status: Optional[CartStatusEnum] = CartStatusEnum.pending
     cart_items: List[CartItemCreate]
+
+    @field_validator("status")
+    @classmethod
+    def status_must_be_pending(cls, v):
+        if v != "pending":
+            raise ValueError("Only carts with status 'pending' can be created.")
+        return v
 
 
 class CartOut(CartCreate):

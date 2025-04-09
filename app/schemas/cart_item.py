@@ -4,7 +4,7 @@ from decimal import Decimal
 from typing import List, Optional
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 
 class CartItemStatusEnum(str, enum.Enum):
@@ -13,6 +13,7 @@ class CartItemStatusEnum(str, enum.Enum):
 
 
 class CartItemCreate(BaseModel):
+
     service_id: int
     category_id: int
     partner_id: int
@@ -21,8 +22,15 @@ class CartItemCreate(BaseModel):
     schedule_date: date
     schedule_time: time
     sales_channel: Optional[str]
-    options: Optional[List[str]]
+    options: Optional[List[int]]
     status: Optional[CartItemStatusEnum] = CartItemStatusEnum.pending
+
+    @field_validator("status")
+    @classmethod
+    def status_must_be_pending(cls, v):
+        if v != "pending":
+            raise ValueError("Only carts with status 'pending' can be created.")
+        return v
 
 
 class CartItemOut(CartItemCreate):

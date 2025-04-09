@@ -1,5 +1,6 @@
 from uuid import uuid4
 
+from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -9,9 +10,21 @@ from app.schemas.cart_item import CartItemCreate
 
 def create_cart_item(db: Session, cart_id, item_in: CartItemCreate):
     db_item = CartItem(**item_in.model_dump(), cart_id=cart_id)
-    db.add(db_item)
-    db.commit()
-    db.refresh(db_item)
+
+    try:
+        db.add(db_item)
+        db.commit()  # Moved into try block (not outside flush)
+        db.refresh(db_item)
+    except IntegrityError as e:
+        db.rollback()
+
+        if "uq_cart_item_composite_key" in str(e.orig):
+            raise HTTPException(
+                status_code=409,
+                detail="This cart item already exists with the same cart, service, category, partner, schedule, and options.",
+            )
+        raise HTTPException(status_code=500, detail="Unexpected database error.")
+
     return db_item
 
 
@@ -43,7 +56,7 @@ def upsert_cart_item(db: Session, cart_id, item_in: CartItemCreate) -> float:
     try:
         db.flush()
     except IntegrityError as e:
-        print("⚠️ IntegrityError caught:", e)
+
         db.rollback()
         existing_item = (
             db.query(CartItem)
