@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.crud import cart_item as crud_cart_item
-from app.models.cart import Cart
+from app.models.cart import Cart, CartStatusEnum
 from app.schemas.cart import CartCreate, CartUpdate
 
 
@@ -75,8 +75,10 @@ def update_cart(db: Session, cart_id, cart_in: CartUpdate):
     return cart
 
 
-def get_carts(db: Session, customer_id: Optional[int] = None) -> List[Cart]:
-    query = db.query(Cart)
-    if customer_id is not None:
-        query = query.filter(Cart.customer_id == customer_id)
-    return query.order_by(Cart.created_at.desc()).all()
+def get_carts(
+    db: Session, customer_id: int, status: Optional[CartStatusEnum] = None
+) -> List[Cart]:
+    query = db.query(Cart).filter(Cart.customer_id == customer_id)
+    if status:
+        query = query.filter(Cart.status == status)
+    return query.all()

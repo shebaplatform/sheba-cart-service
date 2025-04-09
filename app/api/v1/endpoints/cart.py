@@ -8,6 +8,7 @@ from app.api.deps import get_db
 from app.crud import cart as crud_cart
 from app.crud import cart_item as crud_cart_item
 from app.crud import cart_item as crud_item
+from app.models.cart import CartStatusEnum
 from app.schemas.cart import CartCreate, CartOut, CartUpdate
 from app.schemas.cart_item import CartItemCreate, CartItemOut, CartItemUpdate
 
@@ -20,8 +21,12 @@ def create_cart(cart_in: CartCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/", response_model=List[CartOut])
-def list_carts(customer_id: Optional[int] = Query(None), db: Session = Depends(get_db)):
-    return crud_cart.get_carts(db, customer_id=customer_id)
+def list_carts(
+    customer_id: int,
+    status: Optional[CartStatusEnum] = Query(None),
+    db: Session = Depends(get_db),
+):
+    return crud_cart.get_carts(db, customer_id, status)
 
 
 @router.get("/{cart_id}", response_model=CartOut)
