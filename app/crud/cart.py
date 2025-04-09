@@ -1,3 +1,4 @@
+from typing import List, Optional
 from uuid import uuid4
 
 from fastapi import HTTPException
@@ -72,3 +73,10 @@ def update_cart(db: Session, cart_id, cart_in: CartUpdate):
     db.commit()
     db.refresh(cart)
     return cart
+
+
+def get_carts(db: Session, customer_id: Optional[int] = None) -> List[Cart]:
+    query = db.query(Cart)
+    if customer_id is not None:
+        query = query.filter(Cart.customer_id == customer_id)
+    return query.order_by(Cart.created_at.desc()).all()

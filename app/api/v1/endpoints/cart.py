@@ -1,6 +1,7 @@
+from typing import List, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db
@@ -16,6 +17,11 @@ router = APIRouter()
 @router.post("/", response_model=CartOut)
 def create_cart(cart_in: CartCreate, db: Session = Depends(get_db)):
     return crud_cart.create_cart(db, cart_in)
+
+
+@router.get("/", response_model=List[CartOut])
+def list_carts(customer_id: Optional[int] = Query(None), db: Session = Depends(get_db)):
+    return crud_cart.get_carts(db, customer_id=customer_id)
 
 
 @router.get("/{cart_id}", response_model=CartOut)
