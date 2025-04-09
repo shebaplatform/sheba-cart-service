@@ -53,3 +53,10 @@ def update_cart_item(
 ):
     # Ensure the cart ID matches the cart item being updated
     return crud_cart_item.update_cart_item(db, cart_id, cart_item_id, item_in)
+
+
+@router.delete("/{cart_id}/items/{cart_item_id}", status_code=204)
+def delete_cart_item(cart_id: UUID, cart_item_id: UUID, db: Session = Depends(get_db)):
+    success = crud_cart_item.delete_cart_item(db, cart_id, cart_item_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Cart item not found or mismatch.")

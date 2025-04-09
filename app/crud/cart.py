@@ -19,7 +19,6 @@ def create_cart(db: Session, cart_in: CartCreate) -> Cart:
         address_id=cart_in.address_id,
         mobile=cart_in.mobile,
         payment_method=cart_in.payment_method,
-        status=cart_in.status,
         total=0,
     )
     db.add(cart)

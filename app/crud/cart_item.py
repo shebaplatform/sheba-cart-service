@@ -111,3 +111,22 @@ def update_cart_item(
     db.commit()
     db.refresh(cart_item)
     return cart_item
+
+
+def delete_cart_item(db: Session, cart_id: UUID, cart_item_id: UUID) -> bool:
+    cart_item = (
+        db.query(CartItem)
+        .filter(CartItem.id == cart_item_id, CartItem.cart_id == cart_id)
+        .first()
+    )
+
+    if not cart_item:
+        return False
+
+    # Only allow deleting if status is 'pending'
+    if cart_item.status != CartItemStatusEnum.pending:
+        return False
+
+    db.delete(cart_item)
+    db.commit()
+    return True
