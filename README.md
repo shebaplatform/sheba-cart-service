@@ -1,4 +1,6 @@
 # Setup PostgreSql
+
+### Docker run
 ```
 docker run --name postgres-db \
   -e POSTGRES_USER=postgres \
@@ -7,6 +9,16 @@ docker run --name postgres-db \
   -p 5432:5432 \
   -v pgdata:/var/lib/postgresql/data \
   -d postgres:17.4
+```
+
+### Create database and user
+```
+docker exec -it postgresql bash
+psql -U postgres
+CREATE USER sheba_user WITH PASSWORD 'your_secure_password';
+CREATE DATABASE sheba_cart_db OWNER sheba_user;
+GRANT ALL PRIVILEGES ON DATABASE sheba_cart_db TO sheba_user;
+GRANT ALL ON SCHEMA public TO sheba_user;
 ```
 
 # Setup virtual environment
