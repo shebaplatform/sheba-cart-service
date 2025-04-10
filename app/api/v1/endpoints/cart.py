@@ -1,16 +1,21 @@
 from typing import List, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Path
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db
 from app.crud import cart as crud_cart
 from app.crud import cart_item as crud_cart_item
 from app.crud import cart_item as crud_item
+from app.crud import checkout as crud_checkout
 from app.models.cart import CartStatusEnum
 from app.schemas.cart import CartCreate, CartOut, CartUpdate
 from app.schemas.cart_item import CartItemCreate, CartItemOut, CartItemUpdate
+from app.schemas.cart_checkout import (
+    CartCheckoutRequest,
+    CartCheckoutResponse,
+)
 
 router = APIRouter()
 
@@ -71,3 +76,17 @@ def delete_cart_item(cart_id: UUID, cart_item_id: UUID, db: Session = Depends(ge
     success = crud_cart_item.delete_cart_item(db, cart_id, cart_item_id)
     if not success:
         raise HTTPException(status_code=404, detail="Cart item not found or mismatch.")
+
+
+@router.post("/carts/{cart_id}/checkout", response_model=CartCheckoutResponse)
+def checkout_cart(
+    cart_id: str = Path(..., title="Cart ID"),
+    checkout_data: CartCheckoutRequest = Depends(),
+    db: Session = Depends(get_db)
+):
+    try:
+        return crud_checkout.checkout_cart(db, cart_id=cart_id, checkout_data=checkout_data)
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
