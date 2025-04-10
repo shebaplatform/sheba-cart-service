@@ -43,3 +43,12 @@ alembic init alembic
 alembic revision --autogenerate -m "initial tables"
 alembic upgrade head
 ```
+
+# Project Run
+
+```
+docker build -t cart_service .
+
+docker run -itd -p 8000:8000 --name cart_service -v $(pwd):/app -w /app cart_service
+
+```
